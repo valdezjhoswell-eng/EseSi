@@ -1,0 +1,39 @@
+name: Compilar RentableZone APK
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+
+      - name: Instalar Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Instalar Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Descomprimir proyecto
+        run: |
+          mkdir -p proyecto
+          unzip -o RentableZone_A11_v0.4_source.zip -d proyecto
+
+      - name: Compilar APK
+        working-directory: proyecto/RentableZone
+        run: gradle assembleDebug
+
+      - name: Guardar APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: RentableZone-APK
+          path: proyecto/RentableZone/app/build/outputs/apk/debug/app-debug.apk
